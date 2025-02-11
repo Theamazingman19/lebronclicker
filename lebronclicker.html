@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Button Center</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f4;
+        }
+        #counter {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        button {
+            padding: 15px 30px;
+            font-size: 18px;
+            background-color: #007bff;
+            color: white;
+            border: 2px solid #333; /* Dark grey border */
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .bouncingImage {
+            position: absolute;
+            width: 70px;
+            height: 70px;
+        }
+        .purchase-buttons-container {
+            display: flex; /* Arrange buttons side by side */
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+        }
+        .purchase-container {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 2px solid #333; /* Dark grey border */
+            margin: 10px;
+            padding: 10px;
+        }
+        .purchase-container img {
+            width: 70px;
+            height: 70px;
+            cursor: pointer;
+        }
+        .purchase-container span {
+            position: absolute;
+            background-color: lightgray;
+            color: black;
+            padding: 10px 15px;
+            border-radius: 5px;
+            display: none;
+            top: 60px;
+            width: 200px;
+            text-align: center;
+            z-index: 1000; /* Ensures the description is always on top */
+        }
+        .purchase-container:hover span {
+            display: block;
+        }
+        .click-effect {
+            position: absolute;
+            font-size: 14px;
+            color: black;
+            animation: floatUp 3s forwards;
+            pointer-events: none;
+        }
+        .critical-effect {
+            position: absolute;
+            font-size: 16px;
+            color: red;
+            animation: floatUp 2s forwards;
+            pointer-events: none;
+        }
+        @keyframes floatUp {
+            0% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            50% {
+                opacity: 0.5;
+                transform: translateY(-30px);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-60px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="counter">Sunshines: 0</div>
+    <button onclick="addSunshine(event)">Click Me</button>
+
+    <!-- Container for both purchase buttons -->
+    <div class="purchase-buttons-container">
+        <!-- Purchase Bouncing Image Button -->
+        <div class="purchase-container" onclick="purchaseBouncingImage()">
+            <img src="bouncing-image.png" alt="Purchase Bouncing Image">
+            <span id="bouncingImageDescription">Bouncing Image - Price: 5</span> <!-- Dynamic price description -->
+        </div>
+
+        <!-- Purchase Critical Chance Button -->
+        <div class="purchase-container" id="criticalContainer" onclick="purchaseCriticalChance()">
+            <img src="critical-chance.png" alt="Purchase Critical Chance">
+            <span>Critical Chance - Price: 15</span>
+        </div>
+
+        <!-- Purchase Lebron Meme Button (Initially hidden) -->
+        <div class="purchase-container" id="lebronContainer" onclick="purchaseLebronMeme()">
+            <img src="lebron-meme.png" alt="Purchase Lebron Meme">
+            <span>Lebron Meme - Price: 100</span>
+        </div>
+    </div>
+
+    <script>
+        let sunshines = 0;
+        let bouncingImages = [];
+        let imagePrice = 5;
+        let criticalChancePrice = 15;
+        let lebronMemePrice = 100;
+        let hasCriticalChance = false; // Flag to track if critical chance has been purchased
+        let hasLebronMeme = false; // Flag to track if Lebron meme has been purchased
+
+        const speed = .6;
+
+        function addSunshine(event) {
+            sunshines++;
+            updateCounter();
+            showClickEffect(event);
+
+            // Check if critical chance is enabled and there is a crit (5% chance)
+            if (hasCriticalChance && Math.random() < 0.05) { // 5% chance for critical hit
+                sunshines += 3; // Add 3 sunshines on crit
+                updateCounter();
+                showCriticalEffect(event);
+            }
+        }
+
+        function showClickEffect(event) {
+            const clickEffect = document.createElement('div');
+            clickEffect.className = 'click-effect';
+            clickEffect.innerText = '+1';
+            document.body.appendChild(clickEffect);
+
+            clickEffect.style.left = `${event.pageX - 20}px`;
+            clickEffect.style.top = `${event.pageY - 20}px`;
+
+            setTimeout(() => {
+                clickEffect.remove();
+            }, 1500);
+        }
+
+        function showCriticalEffect(event) {
+            const critEffect = document.createElement('div');
+            critEffect.className = 'critical-effect';
+            critEffect.innerText = '+3';
+            document.body.appendChild(critEffect);
+
+            critEffect.style.left = `${event.pageX - 30}px`;
+            critEffect.style.top = `${event.pageY - 40}px`;
+
+            setTimeout(() => {
+                critEffect.remove();
+            }, 1500);
+        }
+
+        function purchaseBouncingImage() {
+            if (sunshines >= imagePrice) {
+                sunshines -= imagePrice;
+                updateCounter();
+                startBouncingImage();
+                imagePrice *= 2;
+                imagePrice = Math.round(imagePrice);
+
+                // Update the price in the description dynamically
+                document.getElementById('bouncingImageDescription').innerText = `Bouncing Image - Price: ${imagePrice}`;
+            }
+        }
+
+        function purchaseCriticalChance() {
+            if (sunshines >= criticalChancePrice && !hasCriticalChance) { // Ensure it can only be purchased once
+                sunshines -= criticalChancePrice;
+                updateCounter();
+                hasCriticalChance = true; // Unlock critical chance
+                criticalChancePrice *= 2; // Price for next critical chance purchase (not used since it's one-time)
+                document.getElementById('criticalContainer').style.display = 'none'; // Hide the critical chance button
+                document.getElementById('lebronContainer').style.display = 'block'; // Show the Lebron meme button
+            } else if (hasCriticalChance) {
+                alert("Critical Chance has already been purchased!");
+            }
+        }
+
+        function purchaseLebronMeme() {
+            if (sunshines >= lebronMemePrice && !hasLebronMeme) { // Ensure it can only be purchased once
+                sunshines -= lebronMemePrice;
+                updateCounter();
+                hasLebronMeme = true; // Unlock Lebron meme
+                document.getElementById('lebronContainer').style.display = 'none'; // Hide the Lebron meme button
+            }
+        }
+
+        function updateCounter() {
+            sunshines = Math.round(sunshines);
+            document.getElementById('counter').innerText = 'Sunshines: ' + sunshines;
+        }
+
+        function startBouncingImage() {
+            let img = document.createElement('img');
+            img.src = 'bouncing-image.png';
+            img.className = 'bouncingImage';
+
+            // Generate random position for the bouncing image
+            let randomX = Math.random() * (window.innerWidth - 70); // Random X position
+            let randomY = Math.random() * (window.innerHeight - 70); // Random Y position
+            document.body.appendChild(img);
+            bouncingImages.push({ img, x: randomX, y: randomY, dx: speed, dy: speed });
+            moveImages();
+        }
+
+        function moveImages() {
+            bouncingImages.forEach((obj) => {
+                let maxWidth = window.innerWidth - obj.img.clientWidth;
+                let maxHeight = window.innerHeight - obj.img.clientHeight;
+                obj.x += obj.dx;
+                obj.y += obj.dy;
+
+                // Bounce off the edges of the screen
+                if (obj.x <= 0 || obj.x >= maxWidth) {
+                    obj.dx = -obj.dx;
+                    sunshines++;
+                    updateCounter();
+                }
+                if (obj.y <= 0 || obj.y >= maxHeight) {
+                    obj.dy = -obj.dy;
+                    sunshines++;
+                    updateCounter();
+                }
+
+                // Update image position
+                obj.img.style.left = obj.x + 'px';
+                obj.img.style.top = obj.y + 'px';
+            });
+
+            // Continue moving the images
+            requestAnimationFrame(moveImages);
+        }
+    </script>
+</body>
+</html>
