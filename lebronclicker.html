@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lebron Clicker</title>
+    <title>Button Center</title>
     <style>
         body {
             display: flex;
@@ -100,6 +100,24 @@
                 transform: translateY(-60px);
             }
         }
+        .sunshine-counter {
+    position: absolute;
+    top: 0;      /* Anchor to the top */
+    left: 0;     /* Anchor to the left */
+    transform: translate(-50%, -50%); /* Adjust positioning slightly */
+    width: 35px;
+    height: 35px;
+    background-color: red;
+    color: white;
+    font-size: 25px;
+    font-weight: normal;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: fantasy;
+}
+
     </style>
 </head>
 <body>
@@ -109,10 +127,12 @@
     <!-- Container for both purchase buttons -->
     <div class="purchase-buttons-container">
         <!-- Purchase Bouncing Image Button -->
-        <div class="purchase-container" onclick="purchaseBouncingImage()">
+        <div class="purchase-container" id="purchaseBouncingImage" onclick="purchaseBouncingImage()">
             <img src="bouncing-image.png" alt="Purchase Bouncing Image">
-            <span id="bouncingImageDescription">Bouncing Image - Price: 5</span> <!-- Dynamic price description -->
+            <span id="bouncingImageDescription">Bouncing Lebron - Price: 5</span>
+            <div class="sunshine-counter" id="sunshineCounter">0</div> <!-- Move inside here -->
         </div>
+        
 
         <!-- Purchase Critical Chance Button -->
         <div class="purchase-container" id="criticalContainer" onclick="purchaseCriticalChance()">
@@ -126,6 +146,8 @@
             <span>Lebron Meme - Price: 100</span>
         </div>
     </div>
+    
+
 
     <script>
         let sunshines = 0;
@@ -180,17 +202,23 @@
         }
 
         function purchaseBouncingImage() {
-            if (sunshines >= imagePrice) {
-                sunshines -= imagePrice;
-                updateCounter();
-                startBouncingImage();
-                imagePrice *= 2;
-                imagePrice = Math.round(imagePrice);
+    if (sunshines >= imagePrice) {
+        sunshines -= imagePrice;
+        updateCounter();
+        startBouncingImage();
+        imagePrice *= 2;
+        imagePrice = Math.round(imagePrice);
 
-                // Update the price in the description dynamically
-                document.getElementById('bouncingImageDescription').innerText = `Bouncing Image - Price: ${imagePrice}`;
-            }
-        }
+        // Update the price in the description dynamically
+        document.getElementById('bouncingImageDescription').innerText = `Bouncing Image - Price: ${imagePrice}`;
+
+        // Increment the number in the red circle
+        let sunshineCounter = document.getElementById('sunshineCounter');
+        let currentCount = parseInt(sunshineCounter.innerText);
+        sunshineCounter.innerText = currentCount + 1;
+    }
+}
+
 
         function purchaseCriticalChance() {
             if (sunshines >= criticalChancePrice && !hasCriticalChance) { // Ensure it can only be purchased once
