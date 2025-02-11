@@ -13,6 +13,7 @@
             height: 100vh;
             margin: 0;
             background-color: #f4f4f4;
+            position: relative;
         }
         #counter {
             font-size: 24px;
@@ -40,12 +41,14 @@
             position: absolute;
             width: 70px;
             height: 70px;
+            z-index: 1;
         }
         .purchase-buttons-container {
             display: flex;
             justify-content: center;
             align-items: center;
             margin-top: 20px;
+            z-index: 2;
         }
         .purchase-container {
             position: relative;
@@ -104,6 +107,25 @@
                 transform: translateY(-60px);
             }
         }
+
+        /* Style for the bouncing image counter */
+        .bouncing-image-counter {
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: red;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 14px;
+            font-weight: bold;
+            z-index: 3;
+        }
+
     </style>
 </head>
 <body>
@@ -115,6 +137,7 @@
         <div class="purchase-container" onclick="purchaseBouncingImage()">
             <img src="bouncing-image.png" alt="Purchase Bouncing Image">
             <span id="bouncingImageDescription">Bouncing Image - Price: 5</span>
+            <div id="bouncingImageCounter" class="bouncing-image-counter">0</div> <!-- Bouncing image counter -->
         </div>
         <div class="purchase-container" id="criticalContainer" onclick="purchaseCriticalChance()">
             <img src="critical-chance.png" alt="Purchase Critical Chance">
@@ -137,6 +160,7 @@
         let hasCriticalChance = false;
         let hasLebronMeme = false;
         let speed = .6;
+        let bouncingImageCount = 0; // Counter for number of bouncing images purchased
 
         const rateInterval = 1000; // 1 second interval for updating the CPS
 
@@ -157,6 +181,7 @@
                 sunshines += 3;
                 updateCounter();
                 showCriticalEffect(event);
+                sunshinesPerSecond += 3;  // Increase CPS by 3 for critical hits
             }
         }
 
@@ -196,6 +221,8 @@
                 imagePrice *= 2;
                 imagePrice = Math.round(imagePrice);
                 document.getElementById('bouncingImageDescription').innerText = `Bouncing Image - Price: ${imagePrice}`;
+                bouncingImageCount++;  // Increment bouncing image count
+                document.getElementById('bouncingImageCounter').innerText = bouncingImageCount; // Update the counter display
             }
         }
 
@@ -247,11 +274,13 @@
                 if (obj.x <= 0 || obj.x >= maxWidth) {
                     obj.dx = -obj.dx;
                     sunshines++;
+                    sunshinesPerSecond++; // Increment CPS by 1 on side collision
                     updateCounter();
                 }
                 if (obj.y <= 0 || obj.y >= maxHeight) {
                     obj.dy = -obj.dy;
                     sunshines++;
+                    sunshinesPerSecond++; // Increment CPS by 1 on side collision
                     updateCounter();
                 }
 
