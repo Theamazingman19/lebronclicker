@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lebron Clicker</title>
+    <title>Button Center</title>
     <style>
         body {
             display: flex;
@@ -18,12 +18,16 @@
             font-size: 24px;
             margin-bottom: 20px;
         }
+        #sunshinesPerSecond {
+            font-size: 20px;
+            margin-top: 10px;
+        }
         button {
             padding: 15px 30px;
             font-size: 18px;
             background-color: #007bff;
             color: white;
-            border: 2px solid #333; /* Dark grey border */
+            border: 2px solid #333;
             border-radius: 5px;
             cursor: pointer;
             transition: background 0.3s;
@@ -38,7 +42,7 @@
             height: 70px;
         }
         .purchase-buttons-container {
-            display: flex; /* Arrange buttons side by side */
+            display: flex;
             justify-content: center;
             align-items: center;
             margin-top: 20px;
@@ -48,7 +52,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            border: 2px solid #333; /* Dark grey border */
+            border: 2px solid #333;
             margin: 10px;
             padding: 10px;
         }
@@ -67,7 +71,7 @@
             top: 60px;
             width: 200px;
             text-align: center;
-            z-index: 1000; /* Ensures the description is always on top */
+            z-index: 1000;
         }
         .purchase-container:hover span {
             display: block;
@@ -104,23 +108,18 @@
 </head>
 <body>
     <div id="counter">Sunshines: 0</div>
+    <div id="sunshinesPerSecond">Sunshines per second: 0</div>
     <button onclick="addSunshine(event)">Click Me</button>
 
-    <!-- Container for both purchase buttons -->
     <div class="purchase-buttons-container">
-        <!-- Purchase Bouncing Image Button -->
         <div class="purchase-container" onclick="purchaseBouncingImage()">
             <img src="bouncing-image.png" alt="Purchase Bouncing Image">
-            <span id="bouncingImageDescription">Bouncing Image - Price: 5</span> <!-- Dynamic price description -->
+            <span id="bouncingImageDescription">Bouncing Image - Price: 5</span>
         </div>
-
-        <!-- Purchase Critical Chance Button -->
         <div class="purchase-container" id="criticalContainer" onclick="purchaseCriticalChance()">
             <img src="critical-chance.png" alt="Purchase Critical Chance">
             <span>Critical Chance - Price: 15</span>
         </div>
-
-        <!-- Purchase Lebron Meme Button (Initially hidden) -->
         <div class="purchase-container" id="lebronContainer" onclick="purchaseLebronMeme()">
             <img src="lebron-meme.png" alt="Purchase Lebron Meme">
             <span>Lebron Meme - Price: 100</span>
@@ -129,23 +128,33 @@
 
     <script>
         let sunshines = 0;
+        let clickCount = 0;  // Number of clicks in the current second
+        let sunshinesPerSecond = 0;
         let bouncingImages = [];
         let imagePrice = 5;
         let criticalChancePrice = 15;
         let lebronMemePrice = 100;
-        let hasCriticalChance = false; // Flag to track if critical chance has been purchased
-        let hasLebronMeme = false; // Flag to track if Lebron meme has been purchased
+        let hasCriticalChance = false;
+        let hasLebronMeme = false;
+        let speed = .6;
 
-        const speed = .6;
+        const rateInterval = 1000; // 1 second interval for updating the CPS
+
+        // Update the clicks per second (CPS) every second
+        setInterval(() => {
+            sunshinesPerSecond = clickCount;  // Set the CPS to the number of clicks in the past second
+            document.getElementById('sunshinesPerSecond').innerText = `Sunshines per second: ${sunshinesPerSecond}`;
+            clickCount = 0;  // Reset click count for the next second
+        }, rateInterval);
 
         function addSunshine(event) {
             sunshines++;
+            clickCount++;  // Increment the click count for each click
             updateCounter();
             showClickEffect(event);
 
-            // Check if critical chance is enabled and there is a crit (5% chance)
-            if (hasCriticalChance && Math.random() < 0.05) { // 5% chance for critical hit
-                sunshines += 3; // Add 3 sunshines on crit
+            if (hasCriticalChance && Math.random() < 0.05) {
+                sunshines += 3;
                 updateCounter();
                 showCriticalEffect(event);
             }
@@ -186,31 +195,29 @@
                 startBouncingImage();
                 imagePrice *= 2;
                 imagePrice = Math.round(imagePrice);
-
-                // Update the price in the description dynamically
                 document.getElementById('bouncingImageDescription').innerText = `Bouncing Image - Price: ${imagePrice}`;
             }
         }
 
         function purchaseCriticalChance() {
-            if (sunshines >= criticalChancePrice && !hasCriticalChance) { // Ensure it can only be purchased once
+            if (sunshines >= criticalChancePrice && !hasCriticalChance) {
                 sunshines -= criticalChancePrice;
                 updateCounter();
-                hasCriticalChance = true; // Unlock critical chance
-                criticalChancePrice *= 2; // Price for next critical chance purchase (not used since it's one-time)
-                document.getElementById('criticalContainer').style.display = 'none'; // Hide the critical chance button
-                document.getElementById('lebronContainer').style.display = 'block'; // Show the Lebron meme button
+                hasCriticalChance = true;
+                criticalChancePrice *= 2;
+                document.getElementById('criticalContainer').style.display = 'none';
+                document.getElementById('lebronContainer').style.display = 'block';
             } else if (hasCriticalChance) {
                 alert("Critical Chance has already been purchased!");
             }
         }
 
         function purchaseLebronMeme() {
-            if (sunshines >= lebronMemePrice && !hasLebronMeme) { // Ensure it can only be purchased once
+            if (sunshines >= lebronMemePrice && !hasLebronMeme) {
                 sunshines -= lebronMemePrice;
                 updateCounter();
-                hasLebronMeme = true; // Unlock Lebron meme
-                document.getElementById('lebronContainer').style.display = 'none'; // Hide the Lebron meme button
+                hasLebronMeme = true;
+                document.getElementById('lebronContainer').style.display = 'none';
             }
         }
 
@@ -223,10 +230,8 @@
             let img = document.createElement('img');
             img.src = 'bouncing-image.png';
             img.className = 'bouncingImage';
-
-            // Generate random position for the bouncing image
-            let randomX = Math.random() * (window.innerWidth - 70); // Random X position
-            let randomY = Math.random() * (window.innerHeight - 70); // Random Y position
+            let randomX = Math.random() * (window.innerWidth - 70);
+            let randomY = Math.random() * (window.innerHeight - 70);
             document.body.appendChild(img);
             bouncingImages.push({ img, x: randomX, y: randomY, dx: speed, dy: speed });
             moveImages();
@@ -239,7 +244,6 @@
                 obj.x += obj.dx;
                 obj.y += obj.dy;
 
-                // Bounce off the edges of the screen
                 if (obj.x <= 0 || obj.x >= maxWidth) {
                     obj.dx = -obj.dx;
                     sunshines++;
@@ -251,12 +255,10 @@
                     updateCounter();
                 }
 
-                // Update image position
                 obj.img.style.left = obj.x + 'px';
                 obj.img.style.top = obj.y + 'px';
             });
 
-            // Continue moving the images
             requestAnimationFrame(moveImages);
         }
     </script>
