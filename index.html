@@ -147,9 +147,20 @@
             <img src="lebron-meme.png" alt="Purchase Lebron Meme">
             <span>Lebron Meme - Price: 100</span>
         </div>
+        <div class="purchase-buttons-container">
+            <div class="purchase-container" onclick="purchaseBackgroundMusic()">
+                <img src="music-icon.png" alt="Purchase Background Music">
+                <span>Background Music - Price: 300</span>
+            </div>
+        </div>
+        <audio id="backgroundMusic" loop>
+            <source src="badsunshine.mp3" type="audio/mpeg">
+        </audio>
     </div>
 
     <script>
+        let musicPrice = 300;
+        let hasMusic = false;
         let sunshines = 0;
         let clickCount = 0;  // Number of clicks in the current second
         let sunshinesPerSecond = 0;
@@ -161,7 +172,7 @@
         let hasLebronMeme = false;
         let speed = .6;
         let bouncingImageCount = 0; // Counter for number of bouncing images purchased
-
+        
         const rateInterval = 1000; // 1 second interval for updating the CPS
 
         // Update the clicks per second (CPS) every second
@@ -289,6 +300,19 @@
             });
 
             requestAnimationFrame(moveImages);
+        }
+        function purchaseBackgroundMusic() {
+            if (sunshines >= musicPrice && !hasMusic) {
+                sunshines -= musicPrice;
+                updateCounter();
+                hasMusic = true;
+                document.getElementById('backgroundMusic').play();
+                //alert("Background music purchased!");
+            // } else if (hasMusic) {
+            //     alert("Background music already purchased!");
+            // } else {
+            //     alert("Not enough sunshines!");
+             }
         }
     </script>
 </body>
